@@ -3,9 +3,9 @@ $WarningPreference = "SilentlyContinue"
 $ErrorActionPreference = "Continue"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                   PRE-REQUISITES
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Clear-Host
 Write-Host "Please Enter Your Desired Computer Name: "  -ForegroundColor Cyan 
 $ComputerName = Read-Host 
@@ -26,18 +26,18 @@ Install-Module VSSetup -Scope CurrentUser -Confirm:$false -Force | Out-Null
 Write-Host "    Windows Update Powershell Script" -ForegroundColor Magenta
 Install-Module PSWindowsUpdate -Confirm:$false -Force | Out-Null
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                   ENVIRONMENT VARIABLES
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Write-Host "Setting up Environment Variables" -ForegroundColor Green
 
 [Environment]::SetEnvironmentVariable('ChocolateyToolsLocation', ${env:ProgramFiles(x86)}, "User")
 [Environment]::SetEnvironmentVariable('Path', $Env:Path + ";${env:ProgramFiles}\SourceGear\Common\DiffMerge\", "User")
 Update-SessionEnvironment
   
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                   INSTALLING APPLICATIONS
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 
 # Visual Studio
 Write-Host "Installing Visual Studio" -ForegroundColor Green
@@ -61,7 +61,7 @@ choco install sql-server-management-studio -y
 
 # Visual Studio Code
 Write-Host "Installing Visual Studio Code" -ForegroundColor Green
-choco install vscode -y --params '"/NoDesktopIcon /NoContextMenuFiles /NoContextMenuFolders"'
+choco install vscode -y --params '"/NoDesktopIcon"'
 Update-SessionEnvironment
 
 Write-Host "    Installing C# Extension" -ForegroundColor Magenta
@@ -106,61 +106,46 @@ Write-Host "Installing Various Apps" -ForegroundColor Green
 
 Write-Host "    Git" -ForegroundColor Magenta
 choco install git.install -y --params '/NoShellIntegration'
+Write-Host "    PoshGit" -ForegroundColor Magenta
+choco install poshgit -y
 Write-Host "    Telnet" -ForegroundColor Magenta
 choco install TelnetClient -source windowsFeatures
-Write-Host "    Adobe Acrobat Reader" -ForegroundColor Magenta
-choco install adobereader -y
 Write-Host "    Node.js" -ForegroundColor Magenta
 choco install nodejs.install -y
 Write-Host "    Google Chrome" -ForegroundColor Magenta
 choco install googlechrome -y
-Write-Host "    Skype" -ForegroundColor Magenta
-choco install skype -y
 Write-Host "    Sysinternals" -ForegroundColor Magenta
 choco install sysinternals -y
-Write-Host "    Notepad++" -ForegroundColor Magenta
-choco install notepadplusplus -y
 Write-Host "    7-Zip" -ForegroundColor Magenta
 choco install 7zip.install -y
 Write-Host "    VLC" -ForegroundColor Magenta
 choco install vlc -y
 Write-Host "    Cmder Mini" -ForegroundColor Magenta
 choco install cmdermini -y 
-Write-Host "    CCleaner" -ForegroundColor Magenta
-choco install CCleaner -y
 Write-Host "    Paint.net" -ForegroundColor Magenta
 choco install paint.net -y
-Write-Host "    Calibre" -ForegroundColor Magenta
-choco install calibre -y
 Write-Host "    DiffMerge" -ForegroundColor Magenta
 choco install diffmerge  -y
-Write-Host "    WhatsApp" -ForegroundColor Magenta
-choco install whatsapp -y
+Write-Host "    Beyond Compare" -ForegroundColor Magenta
+choco install beyondcompare  -y
 Write-Host "    Microsoft Teams" -ForegroundColor Magenta
 choco install microsoft-teams -y
 Write-Host "    Slack" -ForegroundColor Magenta
 choco install slack -y
 Write-Host "    Remote Desktop Manager" -ForegroundColor Magenta
 choco install rdcman -y
-Write-Host "    Steam" -ForegroundColor Magenta
-choco install steam -y
 Write-Host "    ReSharper" -ForegroundColor Magenta
 choco install resharper -y
 Write-Host "    DotPeek" -ForegroundColor Magenta
 choco install dotpeek -y
 Write-Host "    Postman" -ForegroundColor Magenta
 choco install postman -y
-Write-Host "    Tweeten (Manual Installation)" -ForegroundColor Magenta
-$LatestTweetenVersion = ((Invoke-WebRequest https://github.com/MehediH/Tweeten/releases/latest -UseBasicParsing -Headers @{"Accept" = "application/json"}).Content | ConvertFrom-Json).tag_name
-$TweetenDownloadLocation = Join-Path -Path $env:temp -ChildPath "TweetenSetup.exe"
-Invoke-WebRequest -Uri "https://github.com/MehediH/Tweeten/releases/download/$LatestTweetenVersion/TweetenSetup.exe" -OutFile $TweetenDownloadLocation | Out-Null
-Start-Process -FilePath $TweetenDownloadLocation
 
 Update-SessionEnvironment
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                   REMOVING PREINSTALLED APPS
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Write-Host "Removing Preinstalled Windows Apps" -ForegroundColor Green
 
 $ApplicationList = "Microsoft.BingFinance",
@@ -236,34 +221,35 @@ $ApplicationList = "Microsoft.BingFinance",
 
 ForEach ($CurrentAppName in $ApplicationList) {
 
-    Write-Host "    Removing $CurrentAppName" -ForegroundColor Magenta
+  Write-Host "    Removing $CurrentAppName" -ForegroundColor Magenta
     
-    $PackageFullName = (Get-AppxPackage $CurrentAppName).PackageFullName
-    $ProPackageFullName = (Get-AppxProvisionedPackage -online | Where-Object {$_.Displayname -eq $CurrentAppName}).PackageName
+  $PackageFullName = (Get-AppxPackage $CurrentAppName).PackageFullName
+  $ProPackageFullName = (Get-AppxProvisionedPackage -online | Where-Object {$_.Displayname -eq $CurrentAppName}).PackageName
 
-    if ($PackageFullName) {
-        Remove-AppxPackage -Package $PackageFullName | Out-Null
-    }
+  if ($PackageFullName) {
+    Remove-AppxPackage -Package $PackageFullName | Out-Null
+  }
 
-    if ($ProPackageFullName) {        
-        Remove-AppxProvisionedPackage -Online -PackageName $ProPackageFullName | Out-Null
-    }
+  if ($ProPackageFullName) {        
+    Remove-AppxProvisionedPackage -Online -PackageName $ProPackageFullName | Out-Null
+  }
 }
 
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                   DOWNLOAD REMOTE FILES
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Write-Host "Downloading Remote Files" -ForegroundColor Green
 
-New-Item (Join-Path -Path $env:UserProfile -ChildPath "\.gitconfig") -Type File -Value ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/mauro-dasilva/MachineSetup/master/Windows/Configs/Git/.gitconfig')) -Force | Out-Null
-New-Item (Join-Path -Path $env:ChocolateyToolsLocation -ChildPath "\cmdermini\vendor\conemu-maximus5\ConEmu.xml") -Type File -Value ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/mauro-dasilva/MachineSetup/master/Windows/Configs/Cmder/ConEmu.xml')) -Force | Out-Null
-New-Item (Join-Path -Path $env:UserProfile -ChildPath "\AppData\Roaming\Code\User\keybindings.json") -Type File -Value ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/mauro-dasilva/MachineSetup/master/Windows/Configs/VSCode/keybindings.json')) -Force | Out-Null
-New-Item (Join-Path -Path $env:UserProfile -ChildPath "\AppData\Roaming\Code\User\settings.json") -Type File -Value ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/mauro-dasilva/MachineSetup/master/Windows/Configs/VSCode/settings.json')) -Force | Out-Null
+New-Item (Join-Path -Path $env:UserProfile -ChildPath "\.gitconfig") -Type File -Value ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/caseymarcallen/MachineSetup/master/Windows/Configs/Git/.gitconfig')) -Force | Out-Null
+New-Item (Join-Path -Path $env:UserProfile -ChildPath "\.gitignore") -Type File -Value ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/caseymarcallen/MachineSetup/master/Windows/Configs/Git/.gitignore')) -Force | Out-Null
+New-Item (Join-Path -Path $env:ChocolateyToolsLocation -ChildPath "\cmdermini\vendor\conemu-maximus5\ConEmu.xml") -Type File -Value ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/caseymarcallen/MachineSetup/master/Windows/Configs/Cmder/ConEmu.xml')) -Force | Out-Null
+New-Item (Join-Path -Path $env:UserProfile -ChildPath "\AppData\Roaming\Code\User\keybindings.json") -Type File -Value ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/caseymarcallen/MachineSetup/master/Windows/Configs/VSCode/keybindings.json')) -Force | Out-Null
+New-Item (Join-Path -Path $env:UserProfile -ChildPath "\AppData\Roaming\Code\User\settings.json") -Type File -Value ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/caseymarcallen/MachineSetup/master/Windows/Configs/VSCode/settings.json')) -Force | Out-Null
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                   WINDOWS PREFERENCES
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Write-Host "Setting Windows Preferences" -ForegroundColor Green    
 
 New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
@@ -279,8 +265,8 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\$OfficeVersion.0\Outlook
 # Show Hidden Files
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Type DWord -Value 1 -ErrorAction SilentlyContinue
 
-# Hide File Extensions
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 1 -ErrorAction SilentlyContinue
+# Show File Extensions
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 0 -ErrorAction SilentlyContinue
 
 # Navigation Pane Shows The Current Folder
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "NavPaneExpandToCurrentFolder" -Type DWord -Value 1 -ErrorAction SilentlyContinue
@@ -327,8 +313,8 @@ Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "AutoColorization" -T
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" -Name "{645FF040-5081-101B-9F08-00AA002F954E}" -Type DWord -Value 1 -ErrorAction SilentlyContinue
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu" -Name "{645FF040-5081-101B-9F08-00AA002F954E}" -Type DWord -Value 1 -ErrorAction SilentlyContinue
 
-# Use Light Theme By Default
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 1 -ErrorAction SilentlyContinue
+# Use Dark Theme By Default
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Type DWord -Value 0 -ErrorAction SilentlyContinue
 
 # Disable Windows Ink Workspace
 New-Item "HKLM:\SOFTWARE\Policies\Microsoft\WindowsInkWorkspace" -ErrorAction SilentlyContinue | Out-Null
@@ -406,8 +392,8 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\CDP\Sett
 Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 2147483650 -ErrorAction SilentlyContinue
 Add-Type -AssemblyName System.Windows.Forms -ErrorAction SilentlyContinue
 If (!([System.Windows.Forms.Control]::IsKeyLocked('NumLock'))) {
-    $ScriptShell = New-Object -ComObject WScript.Shell
-    $ScriptShell.SendKeys('{NUMLOCK}') 
+  $ScriptShell = New-Object -ComObject WScript.Shell
+  $ScriptShell.SendKeys('{NUMLOCK}') 
 }
 
 # Disabling Search for App in Store for Unknown Extensions
@@ -535,12 +521,6 @@ Remove-Item "HKCR:\Directory\shell\git_shell" -Recurse -ErrorAction SilentlyCont
 Remove-Item "HKCR:\Directory\Background\shell\git_gui" -Recurse -ErrorAction SilentlyContinue
 Remove-Item "HKCR:\Directory\Background\shell\git_shell" -Recurse -ErrorAction SilentlyContinue
 
-# Remove "Open with VS Code" From Context Menu  
-Remove-Item "HKCR:\Directory\shell\VSCode" -Recurse -ErrorAction SilentlyContinue
-Remove-Item "HKCR:\Directory\Background\shell\VSCode" -Recurse -ErrorAction SilentlyContinue
-Remove-Item -LiteralPath "HKCR:\*\shell\VSCode" -Recurse -ErrorAction SilentlyContinue
-Remove-Item "HKCR:\Drive\shell\VSCode" -Recurse -ErrorAction SilentlyContinue
-
 # Remove "Windows Media Player" From Context Menu  
 Remove-Item "HKCR:\Directory\shell\VSCode" -Recurse -ErrorAction SilentlyContinue
 Remove-Item "HKCR:\Directory\Background\shell\VSCode" -Recurse -ErrorAction SilentlyContinue
@@ -601,9 +581,9 @@ Remove-Item "${env:APPDATA}\Microsoft\Windows\SendTo\Fax recipient.lnk" -ErrorAc
 Remove-PSDrive -Name HKCR | Out-Null
 Remove-PSDrive -Name HKU | Out-Null
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                  ADD/REMOVE WINDOWS FEATURES
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Write-Host "Adding/Removing Windows Features" -ForegroundColor Green
 
 Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -ErrorAction SilentlyContinue | Out-Null
@@ -616,18 +596,18 @@ Disable-WindowsOptionalFeature -Online -FeatureName "Printing-XPSServices-Featur
 Disable-WindowsOptionalFeature -Online -FeatureName "Printing-Foundation-InternetPrinting-Client" -NoRestart -ErrorAction SilentlyContinue | Out-Null
 Disable-WindowsOptionalFeature -Online -FeatureName "Internet-Explorer-Optional-amd64" -NoRestart -ErrorAction SilentlyContinue | Out-Null
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                  KEYBOARD PREFERENCES
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Write-Host "Setting up Keyboard Preferences" -ForegroundColor Green
 
 $Languages = Get-WinUserLanguageList
 $Languages.Add("en-US")
 Set-WinUserLanguageList $Languages -Force
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                  MISC SETUP
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Write-Host "Misc Setup" -ForegroundColor Green
 
 Write-Host "    Removing Desktop Shortcuts" -ForegroundColor Magenta
@@ -637,86 +617,81 @@ Remove-Item "$env:UserProfile\Desktop\*.lnk"
 Write-Host "    Creating Folders" -ForegroundColor Magenta
 
 If (-Not (Test-Path "C:\Personal")) {
-    New-Item "C:\Personal" -ItemType Directory | Out-Null
+  New-Item "C:\Personal" -ItemType Directory | Out-Null
 }
 
 If (-Not (Test-Path "C:\Source Code")) {
-    New-Item "C:\Source Code" -ItemType Directory | Out-Null
+  New-Item "C:\Source Code" -ItemType Directory | Out-Null
 }
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                  TASKBAR
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 
 # CURRENTLY NOT WORKING IN WINDOWS 10
-If ([Environment]::OSVersion.Version.Major -lt 10) {
-    Write-Host "Add Shortcuts to Taskbar" -ForegroundColor Green
+# If ([Environment]::OSVersion.Version.Major -lt 10) {
+Write-Host "Add Shortcuts to Taskbar" -ForegroundColor Green
 
-    $VisualStudioExe = Join-Path -Path ((Get-VSSetupInstance | Select-VSSetupInstance -Latest).InstallationPath) -ChildPath "\Common7\IDE\devenv.exe"
+$VisualStudioExe = Join-Path -Path ((Get-VSSetupInstance | Select-VSSetupInstance -Latest).InstallationPath) -ChildPath "\Common7\IDE\devenv.exe"
 
-    Remove-Item "${env:APPDATA}\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Recurse | Out-Null
-    Remove-Item "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Recurse | Out-Null
-    Install-ChocolateyPinnedTaskBarItem "$($env:windir)\explorer.exe" | Out-Null
-    Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles(x86)}\Microsoft Office\root\Office$OfficeVersion\Outlook.exe" | Out-Null
-    Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe" | Out-Null
-    Install-ChocolateyPinnedTaskBarItem "$VisualStudioExe" | Out-Null 
-    Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
-    Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles(x86)}\Microsoft SQL Server\140\Tools\Binn\ManagementStudio\ssms.exe" | Out-Null
-    Install-ChocolateyPinnedTaskBarItem "${env:ChocolateyToolsLocation}\cmdermini\cmder.exe" | Out-Null  # See https://github.com/cmderdev/cmder/issues/154#issuecomment-168455895 for workaround on pinning icon
-    Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles(x86)}\Microsoft Office\root\Office$OfficeVersion\Onenote.exe" | Out-Null
-    Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles}\Notepad++\Notepad++.exe" | Out-Null
-    Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles(x86)}\Skype\Phone\Skype.exe" | Out-Null
-    Install-ChocolateyPinnedTaskBarItem "${env:UserProfile}\AppData\Local\WhatsApp\WhatsApp.exe" | Out-Null
-    Install-ChocolateyPinnedTaskBarItem "${env:UserProfile}\AppData\Local\Microsoft\Teams\current\Teams.exe" | Out-Null
-}
+Remove-Item "${env:APPDATA}\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Recurse | Out-Null
+Remove-Item "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -Recurse | Out-Null
+Install-ChocolateyPinnedTaskBarItem "$($env:windir)\explorer.exe" | Out-Null
+Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles(x86)}\Microsoft Office\root\Office$OfficeVersion\Outlook.exe" | Out-Null
+Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe" | Out-Null
+Install-ChocolateyPinnedTaskBarItem "$VisualStudioExe" | Out-Null 
+Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
+Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles(x86)}\Microsoft SQL Server\140\Tools\Binn\ManagementStudio\ssms.exe" | Out-Null
+Install-ChocolateyPinnedTaskBarItem "${env:ChocolateyToolsLocation}\cmdermini\cmder.exe" | Out-Null  # See https://github.com/cmderdev/cmder/issues/154#issuecomment-168455895 for workaround on pinning icon
+Install-ChocolateyPinnedTaskBarItem "${env:ProgramFiles(x86)}\Microsoft Office\root\Office$OfficeVersion\Onenote.exe" | Out-Null
+Install-ChocolateyPinnedTaskBarItem "${env:UserProfile}\AppData\Local\Microsoft\Teams\current\Teams.exe" | Out-Null
+# }
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                   FILE ASSOCIATION
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 
 # CURRENTLY NOT WORKING IN WINDOWS 10
-If ([Environment]::OSVersion.Version.Major -lt 10) {
-    Write-Host "Setting Up Defaut File Associations" -ForegroundColor Green
+# If ([Environment]::OSVersion.Version.Major -lt 10) {
+Write-Host "Setting Up Defaut File Associations" -ForegroundColor Green
 
-    Install-ChocolateyFileAssociation ".txt" "${env:ProgramFiles}\Notepad++\Notepad++.exe" | Out-Null
-    Install-ChocolateyFileAssociation ".log" "${env:ProgramFiles}\Notepad++\Notepad++.exe" | Out-Null
-    Install-ChocolateyFileAssociation ".xml" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
-    Install-ChocolateyFileAssociation ".cs" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
-    Install-ChocolateyFileAssociation ".ps1" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
-    Install-ChocolateyFileAssociation ".psm1" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
-    Install-ChocolateyFileAssociation ".config" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
-    Install-ChocolateyFileAssociation ".avi" "${env:ProgramFiles}\VideoLAN\VLC\vlc.exe" | Out-Null
-    Install-ChocolateyFileAssociation ".mp4" "${env:ProgramFiles}\VideoLAN\VLC\vlc.exe" | Out-Null
-    Install-ChocolateyFileAssociation ".mkv" "${env:ProgramFiles}\VideoLAN\VLC\vlc.exe" | Out-Null
-}
+Install-ChocolateyFileAssociation ".txt" "${env:ProgramFiles}\Notepad++\Notepad++.exe" | Out-Null
+Install-ChocolateyFileAssociation ".log" "${env:ProgramFiles}\Notepad++\Notepad++.exe" | Out-Null
+Install-ChocolateyFileAssociation ".xml" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
+Install-ChocolateyFileAssociation ".cs" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
+Install-ChocolateyFileAssociation ".ps1" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
+Install-ChocolateyFileAssociation ".psm1" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
+Install-ChocolateyFileAssociation ".config" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
+Install-ChocolateyFileAssociation ".avi" "${env:ProgramFiles}\VideoLAN\VLC\vlc.exe" | Out-Null
+Install-ChocolateyFileAssociation ".mp4" "${env:ProgramFiles}\VideoLAN\VLC\vlc.exe" | Out-Null
+Install-ChocolateyFileAssociation ".mkv" "${env:ProgramFiles}\VideoLAN\VLC\vlc.exe" | Out-Null
+# }
 
 Stop-Process -ProcessName explorer
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                  CONFIGURING STARTUP APPLICATIONS
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Write-Host "Configuring Startup Applications" -ForegroundColor Green
 
 Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Steam" -ErrorAction SilentlyContinue
 
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Outlook" -Value "${env:ProgramFiles(x86)}\Microsoft Office\root\Office$OfficeVersion\Outlook.exe" -Force -ErrorAction SilentlyContinue
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Chrome" -Value "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe" -Force -ErrorAction SilentlyContinue
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "WhatsApp" -Value "${env:UserProfile}\AppData\Local\WhatsApp\WhatsApp.exe" -Force -ErrorAction SilentlyContinue
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Cmder" -Value "${env:ChocolateyToolsLocation}\cmdermini\cmder.exe" -Force -ErrorAction SilentlyContinue
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Notepad++" -Value "${env:ProgramFiles}\Notepad++\Notepad++.exe" -Force -ErrorAction SilentlyContinue
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Explorer" -Value "$($env:windir)\explorer.exe" -Force -ErrorAction SilentlyContinue
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                   UPDATE WINDOWS
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Write-Host "Updating Windows" -ForegroundColor Green
 
 Add-WUServiceManager -ServiceID 7971f918-a847-4430-9279-4a52d1efe18d -Confirm:$false | Out-Null
 Get-WUInstall -MicrosoftUpdate -AcceptAll | Out-Null
 
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 #                                                   CLEAN UP
-#####################################################################################################################################################################################################
+###############################################################################################################################################
 Write-Host "Cleaning Up..." -ForegroundColor Green
     
 Write-Host "    Temp Folders" -ForegroundColor Magenta
