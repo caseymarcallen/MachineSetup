@@ -101,6 +101,10 @@ code --install-extension msazurermtools.azurerm-vscode-tools | Out-Null
 Write-Host "Installing Office 365" -ForegroundColor Green
 choco install office365proplus -y
 
+#OneDrive 
+Write-Host "OneDrive" -ForegroundColor Green
+choco install onedrive -y
+
 #Various Apps
 Write-Host "Installing Various Apps" -ForegroundColor Green
 
@@ -701,3 +705,15 @@ Remove-Item $Tempfolders -Force -Recurse -ErrorAction SilentlyContinue | Out-Nul
 Write-Host "    Scheduling Cleanup Of WinSXS Folder on Next Startup" -ForegroundColor Magenta
 New-Item "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce" -ErrorAction SilentlyContinue | Out-Null
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\RunOnce" -Name "Cleanup WinSXS" -Value "Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase" | Out-Null 
+
+Write-Host "" -ForegroundColor Green
+Write-Host "----------------------------------------------------"
+Write-Host "  ✔                 Finished                        "
+Write-Host "----------------------------------------------------"
+Write-Host " To Do:                                             "
+Write-Host "     1. Sign In & Sync OneDrive                     "
+Write-Host "     2. Sign In to Chrome                           "
+Write-Host "     3. Activate Office                             "
+Write-Host "     4. ...                                         "
+Write-Host "----------------------------------------------------"
+
