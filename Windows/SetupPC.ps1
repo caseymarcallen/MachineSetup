@@ -128,16 +128,12 @@ Write-Host "    Cmder Mini" -ForegroundColor Magenta
 choco install cmdermini -y 
 Write-Host "    Paint.net" -ForegroundColor Magenta
 choco install paint.net -y
-Write-Host "    DiffMerge" -ForegroundColor Magenta
-choco install diffmerge  -y
 Write-Host "    Beyond Compare" -ForegroundColor Magenta
 choco install beyondcompare  -y
 Write-Host "    Microsoft Teams" -ForegroundColor Magenta
 choco install microsoft-teams -y
 Write-Host "    Slack" -ForegroundColor Magenta
 choco install slack -y
-Write-Host "    Remote Desktop Manager" -ForegroundColor Magenta
-choco install rdcman -y
 Write-Host "    ReSharper" -ForegroundColor Magenta
 choco install resharper -y
 Write-Host "    DotPeek" -ForegroundColor Magenta
