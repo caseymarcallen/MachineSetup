@@ -217,7 +217,9 @@ $ApplicationList = "Microsoft.BingFinance",
 "AdobeSystemIncorporated.AdobePhotoshop",
 "Microsoft.Print3D",
 "Microsoft.GetHelp",
-"king.com.BubbleWitch3Saga"
+"king.com.BubbleWitch3Saga",
+"NORDCURRENT.COOKINGFEVER",
+"A278AB0D.DragonManiaLegends"
 
 ForEach ($CurrentAppName in $ApplicationList) {
 
