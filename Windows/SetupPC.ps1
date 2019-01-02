@@ -257,12 +257,6 @@ Write-Host "Setting Windows Preferences" -ForegroundColor Green
 New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
 New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
 
-# Disable Outlook Notifications
-New-Item "HKCU:\Software\Microsoft\Office\$OfficeVersion.0\Outlook\Preferences" -ErrorAction SilentlyContinue | Out-Null
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\$OfficeVersion.0\Outlook\Preferences" -Name "ChangePointer" -Type DWord -Value 0 -ErrorAction SilentlyContinue
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\$OfficeVersion.0\Outlook\Preferences" -Name "NewmailDesktopAlerts" -Type DWord -Value 0 -ErrorAction SilentlyContinue
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\$OfficeVersion.0\Outlook\Preferences" -Name "PlaySound" -Type DWord -Value 0 -ErrorAction SilentlyContinue
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Office\$OfficeVersion.0\Outlook\Preferences" -Name "ShowEnvelope" -Type DWord -Value 0 -ErrorAction SilentlyContinue
 
 # Show Hidden Files
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Type DWord -Value 1 -ErrorAction SilentlyContinue
@@ -288,8 +282,6 @@ Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" 
 # Enable Lock Screen Spotlight
 Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\CloudContent" -Name "ConfigureWindowsSpotlight" -Type DWord -Value 1 -ErrorAction SilentlyContinue
 
-# Hide Task View Button
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0 -ErrorAction SilentlyContinue
 
 # Disable Sticky Keys Prompt
 Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" "506" -ErrorAction SilentlyContinue
@@ -432,9 +424,6 @@ Remove-Item "HKCR:\Folder\ShellEx\ContextMenuHandlers\Library Location" -Recurse
 Remove-Item "HKLM:\SOFTWARE\Classes\Folder\shell\pintohome" -Recurse -ErrorAction SilentlyContinue
 Remove-Item "HKCR:\Folder\shell\pintohome" -Recurse -ErrorAction SilentlyContinue
 
-# Remove "Quick Access" from File Explorer
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "HubMode" -Type DWord -Value 1 -ErrorAction SilentlyContinue
-
 # Remove "New Contact" From Context Menu   
 Remove-Item "HKCR:\.contact\ShellNew" -Recurse -ErrorAction SilentlyContinue
 
@@ -567,12 +556,6 @@ Remove-Item "HKCR:\SystemFileAssociations\.ply\shell\3D Print" -Recurse -ErrorAc
 Remove-Item "HKCR:\SystemFileAssociations\.stl\shell\3D Print" -Recurse -ErrorAction SilentlyContinue
 Remove-Item "HKCR:\SystemFileAssociations\.wrl\shell\3D Print" -Recurse -ErrorAction SilentlyContinue
 
-# Remove "DiffMerge" From Context Menu
-Remove-Item -LiteralPath "HKCR:\*\shellex\ContextMenuHandlers\SourceGearDiffMergeShellExtension32" -Recurse -ErrorAction SilentlyContinue 
-Remove-Item -LiteralPath "HKCR:\*\shellex\ContextMenuHandlers\SourceGearDiffMergeShellExtension64" -Recurse -ErrorAction SilentlyContinue
-Remove-Item "HKCR:\Directory\shellex\ContextMenuHandlers\SourceGearDiffMergeShellExtension32" -Recurse -ErrorAction SilentlyContinue
-Remove-Item "HKCR:\Directory\shellex\ContextMenuHandlers\SourceGearDiffMergeShellExtension64" -Recurse -ErrorAction SilentlyContinue
-        
 # Remove "Send To" Links
 Remove-Item "${env:APPDATA}\Microsoft\Windows\SendTo\Bluetooth File Transfer.LNK" -ErrorAction SilentlyContinue
 Remove-Item "${env:APPDATA}\Microsoft\Windows\SendTo\Desktop (create shortcut).DeskLink" -ErrorAction SilentlyContinue
@@ -589,7 +572,7 @@ Remove-PSDrive -Name HKU | Out-Null
 Write-Host "Adding/Removing Windows Features" -ForegroundColor Green
 
 Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -ErrorAction SilentlyContinue | Out-Null
-Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-All" -NoRestart -ErrorAction SilentlyContinue | Out-Null
+# Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-All" -NoRestart -ErrorAction SilentlyContinue | Out-Null
 Disable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -NoRestart -ErrorAction SilentlyContinue | Out-Null
 Disable-WindowsOptionalFeature -Online -FeatureName "MediaPlayback" -NoRestart -ErrorAction SilentlyContinue | Out-Null
 Disable-WindowsOptionalFeature -Online -FeatureName "FaxServicesClientPackage" -NoRestart -ErrorAction SilentlyContinue | Out-Null
@@ -618,12 +601,8 @@ Remove-Item "$env:UserProfile\Desktop\*.lnk"
 
 Write-Host "    Creating Folders" -ForegroundColor Magenta
 
-If (-Not (Test-Path "C:\Personal")) {
-  New-Item "C:\Personal" -ItemType Directory | Out-Null
-}
-
-If (-Not (Test-Path "C:\Source Code")) {
-  New-Item "C:\Source Code" -ItemType Directory | Out-Null
+If (-Not (Test-Path "C:\Source")) {
+  New-Item "C:\Source" -ItemType Directory | Out-Null
 }
 
 ###############################################################################################################################################
@@ -657,16 +636,13 @@ Install-ChocolateyPinnedTaskBarItem "${env:UserProfile}\AppData\Local\Microsoft\
 # If ([Environment]::OSVersion.Version.Major -lt 10) {
 Write-Host "Setting Up Defaut File Associations" -ForegroundColor Green
 
-Install-ChocolateyFileAssociation ".txt" "${env:ProgramFiles}\Notepad++\Notepad++.exe" | Out-Null
-Install-ChocolateyFileAssociation ".log" "${env:ProgramFiles}\Notepad++\Notepad++.exe" | Out-Null
+Install-ChocolateyFileAssociation ".txt" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
+Install-ChocolateyFileAssociation ".log" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
 Install-ChocolateyFileAssociation ".xml" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
 Install-ChocolateyFileAssociation ".cs" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
 Install-ChocolateyFileAssociation ".ps1" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
 Install-ChocolateyFileAssociation ".psm1" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
 Install-ChocolateyFileAssociation ".config" "${env:ProgramFiles}\Microsoft VS Code\Code.exe" | Out-Null
-Install-ChocolateyFileAssociation ".avi" "${env:ProgramFiles}\VideoLAN\VLC\vlc.exe" | Out-Null
-Install-ChocolateyFileAssociation ".mp4" "${env:ProgramFiles}\VideoLAN\VLC\vlc.exe" | Out-Null
-Install-ChocolateyFileAssociation ".mkv" "${env:ProgramFiles}\VideoLAN\VLC\vlc.exe" | Out-Null
 # }
 
 Stop-Process -ProcessName explorer
@@ -676,20 +652,12 @@ Stop-Process -ProcessName explorer
 ###############################################################################################################################################
 Write-Host "Configuring Startup Applications" -ForegroundColor Green
 
-Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Steam" -ErrorAction SilentlyContinue
 
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Outlook" -Value "${env:ProgramFiles(x86)}\Microsoft Office\root\Office$OfficeVersion\Outlook.exe" -Force -ErrorAction SilentlyContinue
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Chrome" -Value "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe" -Force -ErrorAction SilentlyContinue
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Cmder" -Value "${env:ChocolateyToolsLocation}\cmdermini\cmder.exe" -Force -ErrorAction SilentlyContinue
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Explorer" -Value "$($env:windir)\explorer.exe" -Force -ErrorAction SilentlyContinue
+# Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Outlook" -Value "${env:ProgramFiles(x86)}\Microsoft Office\root\Office$OfficeVersion\Outlook.exe" -Force -ErrorAction SilentlyContinue
+# Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Chrome" -Value "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe" -Force -ErrorAction SilentlyContinue
+# Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Cmder" -Value "${env:ChocolateyToolsLocation}\cmdermini\cmder.exe" -Force -ErrorAction SilentlyContinue
+# Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "Explorer" -Value "$($env:windir)\explorer.exe" -Force -ErrorAction SilentlyContinue
 
-###############################################################################################################################################
-#                                                   UPDATE WINDOWS
-###############################################################################################################################################
-Write-Host "Updating Windows" -ForegroundColor Green
-
-Add-WUServiceManager -ServiceID 7971f918-a847-4430-9279-4a52d1efe18d -Confirm:$false | Out-Null
-Get-WUInstall -MicrosoftUpdate -AcceptAll | Out-Null
 
 ###############################################################################################################################################
 #                                                   CLEAN UP
