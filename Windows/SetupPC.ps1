@@ -214,7 +214,7 @@ choco install nodejs.install -y
 Write-Host "    Google Chrome" -ForegroundColor Magenta
 choco install googlechrome -y
 Write-Host "    Sysinternals" -ForegroundColor Magenta
-choco install sysinternals -y
+choco install sysinternals -y 
 Write-Host "    7-Zip" -ForegroundColor Magenta
 choco install 7zip.install -y
 Write-Host "    VLC" -ForegroundColor Magenta
@@ -678,7 +678,7 @@ Write-Host "----------------------------------------------------"
 Write-Host "  ✔                 Finished                        "
 Write-Host "----------------------------------------------------"
 Write-Host " To Do:                                             "
-Write-Host "     1. Sign In & Sync OneDrive                     "
+Write-Host "     1. Sign In and Sync OneDrive                   "
 Write-Host "     2. Sign In to Chrome                           "
 Write-Host "     3. Activate Office                             "
 Write-Host "     4. ...                                         "
